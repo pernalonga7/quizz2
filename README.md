@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Floresta Sussurrante - Aventura Interativa</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --primary-color: #38bdf8;
+      --text-color: #f8fafc;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-container {
+      width: 90%;
+      max-width: 600px;
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .game-header h1 {
+      margin: 0;
+      color: var(--primary-color);
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #94a3b8;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background-color: rgba(255, 255, 255, 0.05);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      line-height: 1.6;
+    }
+
+    .choices-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 0.8rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: var(--primary-color);
+      color: #000;
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid #64748b;
+      color: #94a3b8;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main class="game-container">
+    <header class="game-header">
+      <h1>A Floresta Sussurrante</h1>
+      <p class="subtitle">Escolha seu caminho com sabedoria...</p>
+    </header>
+
+    <section id="story-section" class="card">
+      <p id="story-text">Carregando história...</p>
+    </section>
+
+    <section id="choices-section" class="choices-container">
+      <!-- Botões de escolha injetados via JavaScript -->
+    </section>
+
+    <footer class="game-footer">
+      <button id="btn-restart" class="btn btn-secondary">Reiniciar Jogo</button>
+    </footer>
+  </main>
+
+  <script>
+    // Mapeamento dos cenários da aventura
+    const storyNodes = {
+      1: {
+        text: "Você acorda na borda de uma floresta densa e sombria. Há dois caminhos à sua frente.",
+        choices: [
+          { text: "Entrar na caverna escura", nextNode: 2 },
+          { text: "Seguir pelo caminho iluminado", nextNode: 3 }
+        ]
+      },
+      2: {
+        text: "Dentro da caverna, você encontra um baú antigo coberto de musgo.",
+        choices: [
+          { text: "Abrir o baú", nextNode: 4 },
+          { text: "Ignorar o baú e voltar", nextNode: 1 }
+        ]
+      },
+      3: {
+        text: "O caminho iluminado leva a uma clareira onde um velho sábio repousa.",
+        choices: [
+          { text: "Falar com o sábio", nextNode: 5 },
+          { text: "Voltar para o início", nextNode: 1 }
+        ]
+      },
+      4: {
+        text: "Você abre o baú e encontra um mapa antigo que revela um tesouro escondido! Você venceu!",
+        choices: []
+      },
+      5: {
+        text: "O sábio lhe ensina os segredos da floresta e oferece abrigo seguro. Você venceu!",
+        choices: []
+      }
+    };
+
+    // Seleção de elementos do DOM
+    const storyTextElement = document.getElementById('story-text');
+    const choicesSection = document.getElementById('choices-section');
+    const restartButton = document.getElementById('btn-restart');
+
+    // Função para renderizar a etapa atual do jogo
+    function showNode(nodeIndex) {
+      const currentNode = storyNodes[nodeIndex];
+      
+      // Atualiza o texto da história no DOM
+      storyTextElement.textContent = currentNode.text;
+
+      // Limpa as opções anteriores
+      choicesSection.innerHTML = '';
+
+      // Utiliza forEach para criar os botões de escolha dinamicamente
+      currentNode.choices.forEach(choice => {
+        const button = document.createElement('button');
+        button.classList.add('btn');
+        button.textContent = choice.text;
+        
+        // Atributo data-* para armazenar o próximo nó
+        button.dataset.nextNode = choice.nextNode;
+
+        // Registra o evento de clique em cada botão
+        button.addEventListener('click', (event) => {
+          const nextNode = event.target.dataset.nextNode;
+          showNode(nextNode);
+        });
+
+        choicesSection.appendChild(button);
+      });
+    }
+
+    // EventListener no botão de reiniciar
+    restartButton.addEventListener('click', () => {
+      showNode(1);
+    });
+
+    // Inicialização da aventura
+    showNode(1);
+  </script>
+</body>
+</html>
